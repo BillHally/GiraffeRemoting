@@ -1,0 +1,17 @@
+Fable.Remoting.Giraffe
+
+FSharp.Core
+
+Giraffe
+
+Microsoft.AspNetCore.Server.Kestrel
+Microsoft.AspNetCore.Hosting.WindowsServices
+Microsoft.AspNetCore.Server.IISIntegration
+Microsoft.AspNetCore.SignalR
+
+Microsoft.Extensions.Logging.Console
+Microsoft.Extensions.Logging.Debug
+Microsoft.Extensions.Logging.EventLog
+Microsoft.Extensions.Logging.TraceSource
+
+TaskBuilder.fs

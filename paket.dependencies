@@ -1,0 +1,25 @@
+#source https://nugetized.blob.core.windows.net/live-reload/index.json
+source https://www.nuget.org/api/v2/
+storage: none
+framework: auto-detect
+
+nuget Fable.Remoting.Giraffe
+nuget Fable.Remoting.DotNetClient
+
+nuget FSharp.Core
+
+nuget FsToolkit.ErrorHandling
+
+nuget Giraffe
+
+nuget Microsoft.AspNetCore.Server.Kestrel
+nuget Microsoft.AspNetCore.Hosting.WindowsServices
+nuget Microsoft.Extensions.Logging.Console
+nuget Microsoft.Extensions.Logging.Debug
+nuget Microsoft.Extensions.Logging.EventLog
+nuget Microsoft.Extensions.Logging.TraceSource
+nuget Microsoft.AspNetCore.Server.IISIntegration
+nuget Microsoft.AspNetCore.SignalR
+nuget Microsoft.AspNetCore.SignalR.Client
+
+nuget TaskBuilder.fs

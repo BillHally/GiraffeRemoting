@@ -1,0 +1,5 @@
+Fable.Remoting.DotNetClient
+FSharp.Core
+FsToolkit.ErrorHandling
+Microsoft.AspNetCore.SignalR.Client
+TaskBuilder.fs
