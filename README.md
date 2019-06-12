@@ -1,31 +1,8 @@
 # GiraffeRemoting
 
-A [Giraffe](https://github.com/giraffe-fsharp/Giraffe) web application, which has been created via the `dotnet new giraffe` command.
+An example of a [Giraffe](https://github.com/giraffe-fsharp/Giraffe) web app which runs as a Windows service, and provides:
 
-## Build and test the application
+1. a [Fable.Remoting](https://github.com/Zaid-Ajaj/Fable.Remoting) API
+2. a [SignalR](https://github.com/aspnet/AspNetCore/tree/master/src/SignalR) Hub
+3. a .Net console app which uses both (1) and (2)
 
-### Windows
-
-Run the `build.bat` script in order to restore, build and test (if you've selected to include tests) the application:
-
-```
-> ./build.bat
-```
-
-### Linux/macOS
-
-Run the `build.sh` script in order to restore, build and test (if you've selected to include tests) the application:
-
-```
-$ ./build.sh
-```
-
-## Run the application
-
-After a successful build you can start the web application by executing the following command in your terminal:
-
-```
-dotnet run src/GiraffeRemoting
-```
-
-After the application has started visit [http://localhost:5000](http://localhost:5000) in your preferred browser.
