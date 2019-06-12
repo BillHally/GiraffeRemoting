@@ -13,19 +13,19 @@ let routes = sprintf "wss://localhost:5001/%s/%s"
 // proxy: Proxy<IServer> 
 let proxy = Proxy.create<ModelOperations> routes 
 
+let tid () = Thread.CurrentThread.ManagedThreadId
+
 let go () =
     asyncResult { 
         let! hello = proxy.callSafely <@ fun server -> server.Create "hello" @>
-        printfn "Hello: %s" hello.Value
+        printfn "%d: Hello: %s" (tid ()) hello.Value
 
         let! world = proxy.callSafely <@ fun server -> server.Create "world" @>
-        printfn "World: %s" world.Value
+        printfn "%d: World: %s" (tid ()) world.Value
 
         let! all   = proxy.callSafely <@ fun server -> server.All            @>
-        printfn "  All: %A" (all |> Array.map (fun x -> x.Value))
+        printfn "%d:   All: %A" (tid ()) (all |> Array.map (fun x -> x.Value))
     }
-
-let tid () = Thread.CurrentThread.ManagedThreadId
 
 open Microsoft.AspNetCore.SignalR.Client
 open System.Threading.Tasks
@@ -109,4 +109,3 @@ let main argv =
     printfn "%2d: Done" (tid ()) 
 
     0
-
