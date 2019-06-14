@@ -47,11 +47,11 @@ let connectToHub () =
         )
 
     let receptionSubscription =
-        connection.On<string, string>
+        connection.On<string>
             (
                 "ReceiveMessage",
-                fun user message ->
-                    printfn "%2d: Received: %s: %s" (tid ()) user message
+                fun message ->
+                    printfn "%2d: Received: %s" (tid ()) message
             )
 
     let connectTask =
@@ -70,42 +70,59 @@ let connectToHub () =
         ConnectTask           = connectTask
     |}
 
-let sendMessage (connection : HubConnection) (user : string) (msg : string) =
+let register (connection : HubConnection) =
     task {
         try
-            printfn "%2d: Sending : %s: %s" (tid ()) user msg
-            do! connection.InvokeAsync("SendMessage", user, msg)
+            printfn "%2d: Registering as a listener..." (tid ())
+            do! connection.InvokeAsync("RegisterListener")
         with
-        | ex ->
-            printfn "%2d: ERROR: %A" (tid ()) ex
+        | ex -> printfn "%2d: ERROR: %A" (tid ()) ex
+    }
+
+let sendMessage (connection : HubConnection) (msg : string) =
+    task {
+        try
+            printfn "%2d: %s" (tid ()) msg
+            do! connection.InvokeAsync("SendMessage", msg)
+        with
+        | ex -> printfn "%2d: ERROR: %A" (tid ()) ex
     }
 
 [<EntryPoint>]
 let main argv =
-    use gate = new ManualResetEventSlim()
+    if argv.Length > 1 then
+        printfn "Usage: %s [<message>]" (Reflection.Assembly.GetEntryAssembly().GetName().Name)
+        1
+    else
+        use gate = new ManualResetEventSlim()
 
-    printfn "%2d: main" (tid ()) 
+        printfn "%2d: main" (tid ()) 
 
-    async {
-        let! result = go ()
+        async {
+            //let! result = go ()
 
-        match result with
-        | Ok   ()  -> printfn "%2d: OK" (tid ()) 
-        | Error ex ->
-            eprintfn "%2d: ERROR: %A" (tid ()) ex
+            //match result with
+            //| Ok   ()  -> printfn "%2d: OK" (tid ()) 
+            //| Error ex ->
+            //    eprintfn "%2d: ERROR: %A" (tid ()) ex
 
-        let hub = connectToHub ()
-        do! Async.AwaitTask hub.ConnectTask
+            let hub = connectToHub ()
+            do! Async.AwaitTask hub.ConnectTask
 
-        do! Async.AwaitTask (sendMessage hub.Connection "UserA" "1st message")
-        do! Async.AwaitTask (sendMessage hub.Connection "UserB" "2nd message")
+            if argv.Length = 0 then
+                printfn "Listening..."
+                do! Async.AwaitTask (register hub.Connection)
+            else
+                let message = argv.[0]
 
-        gate.Set()
-    }
-    |> Async.StartImmediate
+                do! Async.AwaitTask (sendMessage hub.Connection message)
 
-    gate.Wait()
+                gate.Set()
+        }
+        |> Async.StartImmediate
 
-    printfn "%2d: Done" (tid ()) 
+        gate.Wait()
 
-    0
+        printfn "%2d: Done" (tid ()) 
+
+        0

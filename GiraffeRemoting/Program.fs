@@ -93,7 +93,7 @@ let errorHandler (ex: Exception) (routeInfo: RouteInfo<_>) =
     printfn "Error at %s on method %s" routeInfo.path routeInfo.methodName
     // decide whether or not you want to propagate the error to the client
     match ex with
-    | :? System.IO.IOException as ex ->
+    | :? IOException as ex ->
         let customError = { errorMsg = sprintf "IO: %s" ex.Message }
         Propagate customError
     | ex ->
@@ -180,7 +180,7 @@ let main args =
         //printfn "%A" certificate
         //printfn "------------------------------------------------------------"
 
-        let pathToAssembly = System.Reflection.Assembly.GetExecutingAssembly().Location
+        let pathToAssembly = Reflection.Assembly.GetExecutingAssembly().Location
         let contentRoot = Path.GetDirectoryName(pathToAssembly)
         let webRoot     = Path.Combine(contentRoot, "WebRoot")
 

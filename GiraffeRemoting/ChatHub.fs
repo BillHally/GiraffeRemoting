@@ -1,11 +1,12 @@
 ﻿module Hubs
 
 open Microsoft.AspNetCore.SignalR
-open FSharp.Control.Tasks.ContextInsensitive
 
 type ChatHub() =
-  inherit Hub()
-  member x.SendMessage (user : string, msg : string) =
-    task {
-      do! x.Clients.All.SendAsync("ReceiveMessage", user, msg)
-    }
+    inherit Hub()
+
+    member this.RegisterListener () =
+        this.Groups.AddToGroupAsync(this.Context.ConnectionId, "Listeners")
+
+    member this.SendMessage (msg : string) =
+        this.Clients.Group("Listeners").SendAsync("ReceiveMessage", msg)
