@@ -121,6 +121,13 @@ let giraffeErrorHandler (ex : Exception) (logger : ILogger) =
 // Config and Main
 // ---------------------------------
 
+open Serilog
+open Serilog.AspNetCore
+open Serilog.Configuration
+open Serilog.Core
+open Serilog.Events
+open Serilog.Sinks.SystemConsole
+
 let configureApp (app : IApplicationBuilder) : unit =
     //let env = app.ApplicationServices.GetService<IHostingEnvironment>()
     let logger = app.ApplicationServices.GetRequiredService<ILogger<T>>()
@@ -142,19 +149,13 @@ let configureApp (app : IApplicationBuilder) : unit =
 
                     next.Invoke()
             )
+        .UseSerilogRequestLogging()
         .UseGiraffe(createWebApp logger)
 
 let configureServices (services : IServiceCollection) =
 //    services.AddCors()    |> ignore
     services.AddGiraffe() |> ignore
     services.AddSignalR() |> ignore
-
-open Serilog
-open Serilog.AspNetCore
-open Serilog.Configuration
-open Serilog.Core
-open Serilog.Events
-open Serilog.Sinks.SystemConsole
 
 //let getCertificate (location : StoreLocation) (storeName : StoreName) (subject : string) : X509Certificate2 =
 //    use store = new X509Store(storeName, location)

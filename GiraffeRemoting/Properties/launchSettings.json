@@ -9,21 +9,11 @@
   },
   "profiles": {
     "IIS Express": {
-      "commandName": "IISExpress",
+      "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    },
-    "GiraffeRemoting": {
-      "commandName": "Executable",
-      "executablePath": "C:\\git\\github\\billhally\\active\\GiraffeRemoting\\GiraffeRemoting\\bin\\Debug\\netcoreapp3.0\\win10-x64\\GiraffeRemoting.exe",
-      "commandLineArgs": "--run",
-      "environmentVariables": {
-        "LAUNCHER_ARGS": "--run",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:5000/"
     }
   }
 }
