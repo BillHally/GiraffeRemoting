@@ -149,18 +149,12 @@ let configureServices (services : IServiceCollection) =
     services.AddGiraffe() |> ignore
     services.AddSignalR() |> ignore
 
-let configureLogging runAsService (builder : ILoggingBuilder) =
-    builder.AddFilter(fun l -> l >= LogLevel.Debug)
-           .AddTraceSource(Diagnostics.SourceSwitch("TraceSwitch", "Verbose"))
-           .AddDebug()
-           |> ignore
-
-    if runAsService then
-        builder.AddEventLog()
-           |> ignore
-    else
-        builder.AddConsole()
-           |> ignore
+open Serilog
+open Serilog.AspNetCore
+open Serilog.Configuration
+open Serilog.Core
+open Serilog.Events
+open Serilog.Sinks.SystemConsole
 
 //let getCertificate (location : StoreLocation) (storeName : StoreName) (subject : string) : X509Certificate2 =
 //    use store = new X509Store(storeName, location)
@@ -175,6 +169,24 @@ let configureLogging runAsService (builder : ILoggingBuilder) =
 [<EntryPoint>]
 let main args =
     try
+        let runAsService =
+            not (Array.contains "--run" args) && not (Array.contains @"%LAUNCHER_ARGS%" args) && Environment.UserInteractive
+
+        Log.Logger <-
+            LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LoggingLevelSwitch(LogEventLevel.Information))
+                .Enrich.FromLogContext()
+            |> (
+                    fun (x : LoggerConfiguration) ->
+                        if runAsService then
+                            x.WriteTo.EventLog("GiraffeRemoting", manageEventSource = true)
+                        else
+                            x.WriteTo.Console(theme = Themes.AnsiConsoleTheme.Code)
+                )
+            |> (fun x -> x.CreateLogger())
+
+        //Log.Information("Hello, world!")
         //let certificate = getCertificate StoreLocation.LocalMachine StoreName.Root "localhost"
 
         //printfn "------------------------------------------------------------"
@@ -185,35 +197,38 @@ let main args =
         let contentRoot = Path.GetDirectoryName(pathToAssembly)
         let webRoot     = Path.Combine(contentRoot, "WebRoot")
 
-        let runAsService =
-            not (Array.contains "--run" args) && Environment.UserInteractive
+        let storeLocation =
+            if runAsService then
+                StoreLocation.LocalMachine
+            else
+                StoreLocation.CurrentUser
 
-        let host =
+        let builder =
             WebHostBuilder()
-                .UseKestrel( fun options ->
-                    options.Listen
-                        (
-                            IPAddress.Loopback,
-                            5001,
+                .UseKestrel(
+                        fun options ->
+                            options.Listen
+                                (
+                                    IPAddress.Loopback,
+                                    5001,
 
-                            fun listenOptions ->
-//                                listenOptions.UseHttps(StoreName.Root, "localhost", false, StoreLocation.LocalMachine)
-                                listenOptions.UseHttps(StoreName.Root, "localhost", false, StoreLocation.CurrentUser)
-                                |> ignore
-                        )
-                )
+                                    fun listenOptions ->
+                                        listenOptions.UseHttps(StoreName.Root, "localhost", false, storeLocation)
+                                        |> ignore
+                                )
+                    )
                 .UseContentRoot(contentRoot)
                 //.UseIISIntegration()
                 .UseWebRoot(webRoot)
                 .Configure(Action<IApplicationBuilder> configureApp)
                 .ConfigureServices(configureServices)
-                .ConfigureLogging(configureLogging runAsService)
-                .Build()
+                .UseSerilog()
 
-        let tr s = Diagnostics.Trace.WriteLine(sprintf "GiraffeRemoting: %s" s)
-        tr (sprintf "           args: %A" args)
-        tr (sprintf "UserInteractive: %b" Environment.UserInteractive)
-        tr (sprintf "   runAsService: %b" runAsService)
+        let host = builder.Build()
+
+        Log.Information(sprintf "           args: %A" args)
+        Log.Information(sprintf "UserInteractive: %b" Environment.UserInteractive)
+        Log.Information(sprintf "   runAsService: %b" runAsService)
 
         if runAsService then
             host.RunAsCustomService()

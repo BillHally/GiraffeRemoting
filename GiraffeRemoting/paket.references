@@ -14,4 +14,8 @@ Microsoft.Extensions.Logging.Debug
 Microsoft.Extensions.Logging.EventLog
 Microsoft.Extensions.Logging.TraceSource
 
+Serilog.AspNetCore
+Serilog.Sinks.Console
+Serilog.Sinks.EventLog
+
 TaskBuilder.fs

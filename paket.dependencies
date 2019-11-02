@@ -22,4 +22,9 @@ nuget Microsoft.AspNetCore.Server.IISIntegration
 nuget Microsoft.AspNetCore.SignalR
 nuget Microsoft.AspNetCore.SignalR.Client
 
+nuget Serilog
+nuget Serilog.AspNetCore
+nuget Serilog.Sinks.Console
+nuget Serilog.Sinks.EventLog
+
 nuget TaskBuilder.fs
