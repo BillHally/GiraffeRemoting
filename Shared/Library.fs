@@ -1,6 +1,6 @@
 ﻿namespace Shared
 
-open System 
+open System
 
 type Model = {
     Value : string
