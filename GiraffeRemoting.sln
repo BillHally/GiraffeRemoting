@@ -5,8 +5,8 @@ VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{6B098E01-DC5F-4A8A-9936-B91133ADFB56}"
 	ProjectSection(SolutionItems) = preProject
-		..\paket.dependencies = ..\paket.dependencies
-		..\paket.lock = ..\paket.lock
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
 	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "GiraffeRemoting", "GiraffeRemoting\GiraffeRemoting.fsproj", "{5A06F97E-25C4-4CB5-ADFD-63ED810C40B3}"

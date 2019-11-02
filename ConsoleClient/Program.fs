@@ -10,13 +10,13 @@ open System.Threading
 // specifies how the routes should be generated
 let routes = sprintf "wss://localhost:5001/%s/%s"
 
-// proxy: Proxy<IServer> 
-let proxy = Proxy.create<ModelOperations> routes 
+// proxy: Proxy<IServer>
+let proxy = Proxy.create<ModelOperations> routes
 
 let tid () = Thread.CurrentThread.ManagedThreadId
 
 let go () =
-    asyncResult { 
+    asyncResult {
         let! hello = proxy.callSafely <@ fun server -> server.Create "hello" @>
         printfn "%d: Hello: %s" (tid ()) hello.Value
 
@@ -96,13 +96,13 @@ let main argv =
     else
         use gate = new ManualResetEventSlim()
 
-        printfn "%2d: main" (tid ()) 
+        printfn "%2d: main" (tid ())
 
         async {
             //let! result = go ()
 
             //match result with
-            //| Ok   ()  -> printfn "%2d: OK" (tid ()) 
+            //| Ok   ()  -> printfn "%2d: OK" (tid ())
             //| Error ex ->
             //    eprintfn "%2d: ERROR: %A" (tid ()) ex
 
@@ -123,6 +123,6 @@ let main argv =
 
         gate.Wait()
 
-        printfn "%2d: Done" (tid ()) 
+        printfn "%2d: Done" (tid ())
 
         0

@@ -32,9 +32,9 @@ let createService (logger : ILogger<T>) =
                         {
                             Model.Value = s
                         }
-                        
+
                     all.Add x
-                    
+
                     return  x
                 }
 
@@ -65,14 +65,14 @@ type CustomWebHostService(host : IWebHost) =
     override __.OnStopping() =
         logger.LogInformation("OnStopping method called.")
         base.OnStopping()
-    
+
 [<Extension>]
 type WebHostServiceExtensions =
     [<Extension>]
     static member RunAsCustomService(host : IWebHost) =
         let webHostService = new CustomWebHostService(host)
         ServiceBase.Run(webHostService)
-        
+
 // ---------------------------------
 // Models
 // ---------------------------------
@@ -88,7 +88,7 @@ type Message =
 
 type CustomError = { errorMsg: string }
 
-let errorHandler (ex: Exception) (routeInfo: RouteInfo<_>) = 
+let errorHandler (ex: Exception) (routeInfo: RouteInfo<_>) =
     // do some logging
     printfn "Error at %s on method %s" routeInfo.path routeInfo.methodName
     // decide whether or not you want to propagate the error to the client
@@ -101,8 +101,8 @@ let errorHandler (ex: Exception) (routeInfo: RouteInfo<_>) =
         Propagate customError
         //// ignore error
         //Ignore
-        
-let createWebApp logger : HttpHandler = 
+
+let createWebApp logger : HttpHandler =
     Remoting.createApi()
     |> Remoting.fromValue (createService logger)
     |> Remoting.withDiagnosticsLogger (printfn "DIAG: %s")
@@ -126,13 +126,14 @@ let configureApp (app : IApplicationBuilder) : unit =
     let logger = app.ApplicationServices.GetRequiredService<ILogger<T>>()
 
     logger.LogInformation("Configuring app...")
-    
+
     //(
     //    match env.IsDevelopment() with
     //    | true  -> app.UseDeveloperExceptionPage()
     //    | false -> app.UseGiraffeErrorHandler giraffeErrorHandler
     //)
-    app.UseSignalR(fun routes -> routes.MapHub<Hubs.ChatHub>(PathString("/ChatHub")) |> ignore)
+    app.UseRouting()
+        .UseEndpoints(fun routes -> routes.MapHub<Hubs.ChatHub>("/ChatHub") |> ignore)
         .UseGiraffeErrorHandler(giraffeErrorHandler)
         .Use(
                 fun context next ->
@@ -194,9 +195,10 @@ let main args =
                         (
                             IPAddress.Loopback,
                             5001,
-                            
+
                             fun listenOptions ->
-                                listenOptions.UseHttps(StoreName.Root, "localhost", false, StoreLocation.LocalMachine)
+//                                listenOptions.UseHttps(StoreName.Root, "localhost", false, StoreLocation.LocalMachine)
+                                listenOptions.UseHttps(StoreName.Root, "localhost", false, StoreLocation.CurrentUser)
                                 |> ignore
                         )
                 )
